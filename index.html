@@ -1,0 +1,461 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>AI CGPA Predictor</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#071b34;
+color:white;
+}
+
+header{
+text-align:center;
+padding:20px;
+background:#0d2748;
+}
+
+.container{
+display:flex;
+flex-wrap:wrap;
+gap:20px;
+padding:20px;
+}
+
+.left{
+flex:2;
+min-width:320px;
+}
+
+.right{
+flex:1;
+min-width:300px;
+}
+
+.card{
+background:#102d52;
+padding:20px;
+border-radius:12px;
+}
+
+input,button{
+width:100%;
+padding:12px;
+margin-top:12px;
+border:none;
+border-radius:8px;
+font-size:15px;
+}
+
+button{
+background:#00aaff;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+button:hover{
+background:#0088cc;
+}
+
+.box{
+background:#173c6b;
+padding:12px;
+border-radius:10px;
+margin-top:12px;
+line-height:1.7;
+}
+
+.good{
+color:#00ff99;
+}
+
+.mid{
+color:#ffd166;
+}
+
+.low{
+color:#ff6b6b;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>🎯 AI Smart CGPA Predictor</h1>
+
+<p>Real Subject Wise Required Marks Analysis</p>
+
+</header>
+
+<div class="container">
+
+<!-- LEFT -->
+
+<div class="left">
+
+<div class="card">
+
+<h2>👨‍🎓 Student Details</h2>
+
+<input id="name" placeholder="Student Name">
+
+<input id="roll" placeholder="Roll Number">
+
+<input id="current" type="number" step="0.1"
+placeholder="Current CGPA">
+
+<input id="target" type="number" step="0.1"
+placeholder="Target CGPA">
+
+<input id="count" type="number"
+placeholder="Number Of Subjects">
+
+<button onclick="generateSubjects()">
+
+Generate Subjects
+
+</button>
+
+<div id="subjects"></div>
+
+<button onclick="calculateMarks()">
+
+Calculate Required Marks
+
+</button>
+
+</div>
+
+</div>
+
+<!-- RIGHT -->
+
+<div class="right">
+
+<div class="card">
+
+<h2>📊 Final Result</h2>
+
+<div id="result">
+
+Results will appear here...
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/* GENERATE SUBJECT INPUTS */
+
+function generateSubjects(){
+
+let n = count.value;
+
+let html = "";
+
+for(let i=0;i<n;i++){
+
+html += `
+
+<div class="box">
+
+<h3>📘 Subject ${i+1}</h3>
+
+<input id="sub${i}"
+placeholder="Subject Name">
+
+<input id="mark${i}"
+type="number"
+placeholder="Out Of Marks">
+
+</div>
+
+`;
+
+}
+
+subjects.innerHTML = html;
+
+}
+
+/* MAIN CALCULATION */
+
+function calculateMarks(){
+
+let currentCgpa = parseFloat(current.value);
+
+let targetCgpa = parseFloat(target.value);
+
+let totalSubjects = parseInt(count.value);
+
+/* VALIDATION */
+
+if(targetCgpa <= currentCgpa){
+
+result.innerHTML = `
+
+<div class="box">
+
+<h3>⚠️ Invalid Target</h3>
+
+<p>
+Target CGPA should be greater than Current CGPA.
+</p>
+
+</div>
+
+`;
+
+return;
+
+}
+
+/* REALISTIC REQUIRED PERFORMANCE */
+
+/*
+CGPA ANALYSIS LOGIC
+
+Current CGPA → Existing Performance
+Target CGPA → Future Goal
+
+Higher gap means higher marks needed.
+
+*/
+
+let cgpaGap = targetCgpa - currentCgpa;
+
+/* BASE REQUIRED PERCENTAGE */
+
+let requiredPercentage =
+(currentCgpa * 9.5) +
+(cgpaGap * 12);
+
+/* EXTRA BOOST FOR HIGH TARGETS */
+
+if(targetCgpa >= 9){
+
+requiredPercentage += 5;
+
+}
+
+else if(targetCgpa >= 8){
+
+requiredPercentage += 3;
+
+}
+
+/* LIMIT */
+
+if(requiredPercentage > 95){
+
+requiredPercentage = 95;
+
+}
+
+/* ANALYSIS MESSAGE */
+
+let analysis = "";
+let color = "";
+
+if(requiredPercentage >= 90){
+
+analysis =
+"🔥 Very high and consistent performance required.";
+
+color = "good";
+
+}
+
+else if(requiredPercentage >= 75){
+
+analysis =
+"✅ Good academic performance required.";
+
+color = "mid";
+
+}
+
+else{
+
+analysis =
+"📘 Moderate preparation required.";
+
+color = "low";
+
+}
+
+/* RESULT HTML */
+
+let html = `
+
+<div class="box">
+
+<h3>👨‍🎓 Student Details</h3>
+
+<p><b>Name:</b> ${name.value}</p>
+
+<p><b>Roll Number:</b> ${roll.value}</p>
+
+<p><b>Current CGPA:</b> ${currentCgpa}</p>
+
+<p><b>Target CGPA:</b> ${targetCgpa}</p>
+
+</div>
+
+<div class="box">
+
+<h3>📈 CGPA Analysis</h3>
+
+<p class="${color}">
+${analysis}
+</p>
+
+<p>
+Current Academic Percentage:
+<b>${(currentCgpa*9.5).toFixed(1)}%</b>
+</p>
+
+<p>
+Estimated Required Percentage:
+<b>${requiredPercentage.toFixed(1)}%</b>
+</p>
+
+<p>
+Required Improvement:
+<b>${cgpaGap.toFixed(2)} CGPA</b>
+</p>
+
+</div>
+
+`;
+
+/* SUBJECT WISE REQUIRED MARKS */
+
+for(let i=0;i<totalSubjects;i++){
+
+let subject =
+document.getElementById(`sub${i}`).value;
+
+let outMarks =
+parseFloat(
+document.getElementById(`mark${i}`).value
+);
+
+let requiredMarks =
+(requiredPercentage / 100) * outMarks;
+
+/* PERFECT ROUNDING */
+
+requiredMarks =
+Math.ceil(requiredMarks);
+
+/* LIMIT */
+
+if(requiredMarks > outMarks){
+
+requiredMarks = outMarks;
+
+}
+
+/* SUBJECT STATUS */
+
+let status = "";
+
+if(requiredMarks >= outMarks * 0.90){
+
+status =
+"🔥 Excellent performance needed";
+
+}
+
+else if(requiredMarks >= outMarks * 0.75){
+
+status =
+"✅ Strong preparation needed";
+
+}
+
+else{
+
+status =
+"📘 Moderate preparation needed";
+
+}
+
+/* APPEND */
+
+html += `
+
+<div class="box">
+
+<h3>📚 ${subject}</h3>
+
+<p>
+Required Marks:
+<b>${requiredMarks} / ${outMarks}</b>
+</p>
+
+<p>${status}</p>
+
+</div>
+
+`;
+
+}
+
+/* FINAL SUGGESTION */
+
+html += `
+
+<div class="box">
+
+<h3>🎯 Final Suggestion</h3>
+
+<p>
+
+To move from
+<b>${currentCgpa} CGPA</b>
+to
+<b>${targetCgpa} CGPA</b>,
+
+you should maintain approximately
+<b>${requiredPercentage.toFixed(1)}%</b>
+overall performance across all subjects.
+
+Focus on regular study,
+assignments,
+internals,
+and revision consistently.
+
+</p>
+
+</div>
+
+`;
+
+result.innerHTML = html;
+
+}
+
+</script>
+
+</body>
+
+</html>
